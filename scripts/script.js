@@ -44,7 +44,20 @@ function generatePassword() {
       for (let i = 0; i < 10; i++) {
         i < level / 10 ? (visualization += "🟩") : (visualization += "🟥");
       }
-      console.log(visualization);
+
+      let emoji = function () {
+        if (level < 25) {
+          return "💩";
+        } else if (level < 50) {
+          return "🥶";
+        } else if (level < 75) {
+          return "❤️‍🔥";
+        } else {
+          return "🦄";
+        }
+      };
+
+      return `password strength: [${visualization}] ${emoji()}`;
     },
   };
 
@@ -73,19 +86,30 @@ You MUST add at least one character type.`);
     passwordParams.hasLowercase =
       confirm(`Click OK to add lowercase letters to your password.
 
-Example: a b c d e f g`);
+Example: a b c d e f g
+
+${passwordParams.strength()}`);
+
     passwordParams.hasUppercase =
       confirm(`Click OK to add uppercase letters to your password.
 
-Example: A B C D E F G`);
+Example: A B C D E F G
+
+${passwordParams.strength()}`);
+
     passwordParams.hasNumeric =
       confirm(`Click OK to add numbers to your password.
 
-Example: 0 1 2 3 4 5 6`);
+Example: 0 1 2 3 4 5 6
+
+${passwordParams.strength()}`);
+
     passwordParams.hasSpecialCharacters =
       confirm(`Click OK to add special characters to your password.
 
-Example: ! @ # $ % ^ &`);
+Example: ! @ # $ % ^ &
+
+${passwordParams.strength()}`);
 
     if (!passwordParams.hasAtLeastOneCharacterType()) {
       if (!confirm("Please choose at least one character type.")) {
@@ -94,6 +118,9 @@ Example: ! @ # $ % ^ &`);
     }
   }
 
+  alert(`Final ${passwordParams.strength()}
+  
+  Generating password ⚙️`);
   console.log(passwordParams);
   return createPassword(passwordParams);
 }
