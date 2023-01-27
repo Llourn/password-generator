@@ -32,7 +32,7 @@ function generatePassword() {
       let level = 0;
       for (const prop in this) {
         if (prop == "length") {
-          level += 40 * ((this[prop] - 8) / 120);
+          level += Math.floor((40 * (this[prop] - 8)) / 120);
         } else if (typeof this[prop] === "boolean" && this[prop]) {
           level += 15;
         }
@@ -42,15 +42,19 @@ function generatePassword() {
 
       let visualization = "";
       for (let i = 0; i < 10; i++) {
-        i < level / 10 ? (visualization += "🟩") : (visualization += "🟥");
+        i < Math.floor(level / 10)
+          ? (visualization += "🟩")
+          : (visualization += "🟥");
       }
 
       let emoji = function () {
-        if (level < 25) {
+        if (level <= 25) {
           return "💩";
-        } else if (level < 50) {
+        } else if (level <= 50) {
           return "🥶";
-        } else if (level < 75) {
+        } else if (level <= 75) {
+          return "⭐️";
+        } else if (level <= 99) {
           return "❤️‍🔥";
         } else {
           return "🦄";
@@ -61,8 +65,9 @@ function generatePassword() {
     },
   };
 
-  passwordParams.length = prompt(`Please choose the length of your password.
-(Must be at least 8 characters and no more than 128 characters)`).trim();
+  let length = prompt(`Please choose the length of your password.
+  (Must be at least 8 characters and no more than 128 characters)`);
+  passwordParams.length = length !== null ? length.trim() : null;
 
   console.log(passwordParams.length);
   if (passwordParams.length === null) return;
