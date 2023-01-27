@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a password generator. Accessible via an HTML page, it will prompt the user for paramaters such as password length as well as whether or not to include lowercase, uppercase, nemeric, and/or special characters.
+This is a password generator. Accessible via an HTML page, it will prompt the user for paramaters such as password length as well as whether or not to include lowercase, uppercase, numeric, and/or special characters.
 
 The live site can be viewed [here](https://llourn.github.io/password-generator/).
 
