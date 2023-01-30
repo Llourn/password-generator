@@ -13,7 +13,6 @@ function writePassword() {
 generateBtn.addEventListener("click", writePassword);
 
 function generatePassword() {
-  console.log("Starting pass gen");
   let passwordParams = {
     length: 0,
     hasLowercase: false,
@@ -28,6 +27,8 @@ function generatePassword() {
         this.hasSpecialCharacters
       );
     },
+    // Calculates the strength/complexity of the password and
+    // returns a strength level as a percentage.
     strength: function () {
       let level = 0;
       for (const prop in this) {
@@ -36,51 +37,26 @@ function generatePassword() {
         } else if (typeof this[prop] === "boolean" && this[prop]) {
           level += 15;
         }
-        console.log(this[prop], level);
-      }
-      console.log("Str level is: ", level);
-
-      let visualization = "";
-      for (let i = 0; i < 10; i++) {
-        i < Math.floor(level / 10)
-          ? (visualization += "🟩")
-          : (visualization += "🟥");
       }
 
-      let emoji = function () {
-        if (level <= 25) {
-          return "💩";
-        } else if (level <= 50) {
-          return "🥶";
-        } else if (level <= 75) {
-          return "⭐️";
-        } else if (level <= 99) {
-          return "❤️‍🔥";
-        } else {
-          return "🦄";
-        }
-      };
-
-      return `password strength: [${visualization}] ${emoji()}`;
+      return level;
     },
   };
 
-  let length = prompt(`Please choose the length of your password.
+  // Loops until the user clicks "Cancel" or enters a valid password length.
+  while (isNotAValidPasswordLength(passwordParams.length)) {
+    passwordParams.length = prompt(`Please choose the length of your password.
   (Must be at least 8 characters and no more than 128 characters)`);
-  passwordParams.length = length !== null ? length.trim() : null;
 
-  console.log(passwordParams.length);
-  if (passwordParams.length === null) return;
-
-  if (
-    isNaN(passwordParams.length) ||
-    passwordParams.length < 8 ||
-    passwordParams.length > 128
-  ) {
+    if (passwordParams.length === null) {
+      return "Operation cancelled, click Generate Password to start again.";
+    } else if (!isNotAValidPasswordLength(passwordParams.length)) {
+      break;
+    }
     alert("Invalid entry, please try again.");
-    generatePassword();
   }
 
+  // Loops until the user selects at least one character type.
   while (!passwordParams.hasAtLeastOneCharacterType()) {
     alert(`Strong passwords use numerous character types.
 
@@ -93,28 +69,28 @@ You MUST add at least one character type.`);
 
 Example: a b c d e f g
 
-${passwordParams.strength()}`);
+${strengthMeter(passwordParams.strength())}`);
 
     passwordParams.hasUppercase =
       confirm(`Click OK to add uppercase letters to your password.
 
 Example: A B C D E F G
 
-${passwordParams.strength()}`);
+${strengthMeter(passwordParams.strength())}`);
 
     passwordParams.hasNumeric =
       confirm(`Click OK to add numbers to your password.
 
 Example: 0 1 2 3 4 5 6
 
-${passwordParams.strength()}`);
+${strengthMeter(passwordParams.strength())}`);
 
     passwordParams.hasSpecialCharacters =
       confirm(`Click OK to add special characters to your password.
 
 Example: ! @ # $ % ^ &
 
-${passwordParams.strength()}`);
+${strengthMeter(passwordParams.strength())}`);
 
     if (!passwordParams.hasAtLeastOneCharacterType()) {
       if (!confirm("Please choose at least one character type.")) {
@@ -123,40 +99,45 @@ ${passwordParams.strength()}`);
     }
   }
 
-  alert(`Final ${passwordParams.strength()}
+  alert(`${strengthMeter(passwordParams.strength())}
   
-  Generating password ⚙️`);
-  console.log(passwordParams);
+  ⚙️ Generating password...`);
+
   return createPassword(passwordParams);
 }
 
+// Creates the actual password string.
 function createPassword(passwordParams) {
   let chosenCharacterTypes = [];
   let result = "";
 
+  // Add user selected character types to an array.
   for (const prop in passwordParams) {
     if (typeof passwordParams[prop] === "boolean" && passwordParams[prop]) {
       chosenCharacterTypes.push(prop);
     }
   }
 
+  // Loop as many times as the length of the password
+  // selecting random characters from the chosen character types
+  // and appending those to 'result'
   for (let i = 0; i < passwordParams.length; i++) {
     if (chosenCharacterTypes.length === 1) {
-      result += getNextCharacter(chosenCharacterTypes[0]);
+      result += getRandomCharacter(chosenCharacterTypes[0]);
     } else {
       let paramName =
         chosenCharacterTypes[
           Math.floor(Math.random() * chosenCharacterTypes.length)
         ];
-      result += getNextCharacter(paramName);
+      result += getRandomCharacter(paramName);
     }
   }
 
-  console.log(result);
   return result;
 }
 
-function getNextCharacter(paramName) {
+// retreives random character based on the character type.
+function getRandomCharacter(paramName) {
   let letters = "abcdefghijklmnopqrstuvwxyz";
   let numbers = "0123456789";
   let specialCharacters = "!@#$%^&*()";
@@ -175,4 +156,35 @@ function getNextCharacter(paramName) {
       Math.floor(Math.random() * specialCharacters.length)
     ];
   }
+}
+
+// Generates strength meter based on level ranging from 0-100
+function strengthMeter(strengthLevel) {
+  let visualization = "";
+  for (let i = 0; i < 10; i++) {
+    i < Math.floor(strengthLevel / 10)
+      ? (visualization += "🟩")
+      : (visualization += "🟥");
+  }
+
+  let emoji = function () {
+    if (strengthLevel <= 25) {
+      return "💩";
+    } else if (strengthLevel <= 50) {
+      return "🥶";
+    } else if (strengthLevel <= 75) {
+      return "⭐️";
+    } else if (strengthLevel <= 99) {
+      return "❤️‍🔥";
+    } else {
+      return "🦄";
+    }
+  };
+
+  return `Password strength: [${visualization}] ${emoji()}`;
+}
+
+// checks to makes sure the password length is a valid value.
+function isNotAValidPasswordLength(passwordLength) {
+  return isNaN(passwordLength) || passwordLength < 8 || passwordLength > 128;
 }
