@@ -140,7 +140,7 @@ function createPassword(passwordParams) {
 function getRandomCharacter(paramName) {
   let letters = "abcdefghijklmnopqrstuvwxyz";
   let numbers = "0123456789";
-  let specialCharacters = "!@#$%^&*()";
+  let specialCharacters = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
   if (paramName === "hasLowercase") {
     return letters[Math.floor(Math.random() * letters.length)];
